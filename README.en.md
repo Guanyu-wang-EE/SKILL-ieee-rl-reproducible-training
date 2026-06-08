@@ -30,7 +30,7 @@ Use this skill for DRL/RL paper reproduction, long training runs, case studies, 
 ## Core Capabilities
 
 - IEEE Transactions-style plotting rules for publication-grade figures.
-- Real-time training traces through CSV files, stdout summaries, MATLAB monitoring, checkpoints, and manifests.
+- Real-time training traces through CSV/JSONL files, stdout summaries, TensorBoard dashboards, optional MATLAB inspection, checkpoints, and manifests.
 - Reproducibility records for Python, conda, CUDA/PyTorch, GPU/CPU, seeds, commands, paths, and SHA256 manifests.
 - Early-stop gates for bad or contaminated runs.
 - Cleanup discipline that preserves trustworthy successful runs while deleting failed outputs.

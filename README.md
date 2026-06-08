@@ -29,7 +29,7 @@
 ## `SKILL.md` frontmatter
 
   - `name: ieee-rl-reproducible-training`
-  - `description:` 覆盖 RL/DRL paper reproduction、long training、IEEE Transactions plotting、real-time CSV/MATLAB monitoring、traceable outputs、Chinese-first documentation、cleanup of failed runs。
+  - `description:` 覆盖 RL/DRL paper reproduction、long training、IEEE Transactions plotting、real-time CSV/TensorBoard monitoring with optional MATLAB inspection、traceable outputs、Chinese-first documentation、cleanup of failed runs。
 
 ## 核心能力
 
@@ -49,7 +49,7 @@
   - 每个 run 实时写 `progress.csv`、`episodes.csv`、`updates.csv`，最终写 `summary.json`。
   - 每 10 episodes 或固定 step interval 输出 PowerShell/Python stdout。
   - stdout 格式固定为 `[plan]`、`[progress]`、`[train]`、`[warn]`、`[stop]`。
-  - MATLAB 监控模板读取轻量 CSV，展示 reward、cost/constraint violation、alpha/lambda、fps/elapsed，不锁训练文件，不依赖 Python 进程结束。
+  - TensorBoard 作为推荐在线仪表盘；MATLAB 监控模板作为可选兼容层读取轻量 CSV，展示 reward、cost/constraint violation、alpha/lambda、fps/elapsed，不锁训练文件，不依赖 Python 进程结束。
   - checkpoint 至少包含 `latest` 与 `best`，最终保留模型、config、command、summary、manifest。
 
 ### 可复现留痕
