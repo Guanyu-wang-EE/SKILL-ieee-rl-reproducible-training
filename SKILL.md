@@ -9,8 +9,7 @@ description: Use when RL/DRL paper reproduction or energy-system control work ne
 
 Use this skill to keep RL/DRL reproduction work traceable end to end: live training records, separate train/test evaluation, IEEE-style figures, Chinese-first colleague-readable reports, risk analysis, reproducibility manifests, and clean final experiment folders.
 
-## Hard Router
-
+## Reference Routing
 | User task | Load |
 |---|---|
 | Set up or audit long training traces, stdout logs, CSV/JSONL, TensorBoard, checkpoints, smoke tests, or evaluation/test passes | `references/realtime-training-monitoring.md` |
@@ -22,7 +21,7 @@ Use this skill to keep RL/DRL reproduction work traceable end to end: live train
 | Use MATLAB for live CSV viewing | `references/realtime-training-monitoring.md` and `assets/monitor_training_template.m` |
 | Verify an existing run folder | Use `scripts/validate_run_trace.py` |
 
-Do not load every reference by default. Load only the routed files plus any directly required assets/scripts.
+Do not load every reference by default. Load only the routed files plus any directly required assets/scripts. This section is the hard router.
 
 ## Hard Gates
 
