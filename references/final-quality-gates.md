@@ -9,8 +9,9 @@ Use this reference before claiming any substantial RL/DRL training, pilot, long 
 3. Check reports and reader usability.
 4. Check figures, figure README, figure quality audit, and tables.
 5. Check manifests and indexes.
-6. Check cleanup/exclusion records.
-7. State remaining missing items instead of silently omitting them.
+6. Check `skill_compliance_audit.md`.
+7. Check cleanup/exclusion records.
+8. State remaining missing items instead of silently omitting them.
 
 ## Code Header Gate
 
@@ -54,6 +55,8 @@ Training and evaluation metrics must remain separate.
 Long training must include TensorBoard event files and a recorded dashboard/logdir command. If MATLAB live monitoring is used, it must read generated CSV files such as `progress.csv` and remain a backup viewer rather than replacing TensorBoard.
 
 Reward comparisons, algorithm rankings, PPT takeaways, and paper-facing claims must use same-tier raw environment reward delta, such as environment `step()` reward or `eval_episodes.csv:reward` on one scale. If only shaped training-objective rewards exist, mark the comparison `NOT READY` and keep those curves diagnostic-only.
+
+`algorithm_comparison_summary.csv` must include `algorithm, tier, seed_count, raw_reward_source, raw_env_reward_mean, raw_env_reward_std, delta_vs_same_tier_baseline, shaped_reward_used_for_claim`. Any `shaped_reward_used_for_claim=true` row fails the reward comparison gate.
 
 ## Markdown Gate
 
@@ -110,6 +113,7 @@ episode_summary.csv
 eval_summary.csv
 constraint_violation_summary.csv
 algorithm_comparison_summary.csv
+same_tier_raw_reward_delta.csv
 checkpoint_roundtrip_summary.csv
 warning_summary.csv
 artifact_index.csv
@@ -125,11 +129,14 @@ Require:
 reproducibility_manifest.json
 artifact_index.csv
 ppt_index.md or colleague_briefing.md
+skill_compliance_audit.md
 ```
 
 The reproducibility manifest must include SHA256 and byte counts for Markdown reports, figures, tables, validation logs, and checkpoints that are part of the final package.
 
 The PPT index or colleague briefing must map each slide to a figure, table, takeaway, claim boundary, and artifact path.
+
+`skill_compliance_audit.md` must include a Markdown table with `gate_id, requirement, evidence_path, command, verdict, missing_reason` so final readiness is machine-checkable.
 
 ## Cleanup Gate
 

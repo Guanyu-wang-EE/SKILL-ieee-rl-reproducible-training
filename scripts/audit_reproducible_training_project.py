@@ -13,12 +13,33 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
+import re
 from pathlib import Path
 
 
 HEADER_MARKERS = ("中文概览", "中文为主总览")
 BUDDHA_MARKERS = ("佛祖保佑", "Buddha")
+COMPLIANCE_COLUMNS = {"gate_id", "requirement", "evidence_path", "command", "verdict", "missing_reason"}
+ALGORITHM_COMPARISON_COLUMNS = {
+    "algorithm",
+    "tier",
+    "seed_count",
+    "raw_reward_source",
+    "raw_env_reward_mean",
+    "raw_env_reward_std",
+    "delta_vs_same_tier_baseline",
+    "shaped_reward_used_for_claim",
+}
+HIGH_RISK_CLAIMS = (
+    "exact cppo",
+    "paper-level proof",
+    "converged",
+    "optimal",
+    "safe policy",
+    "state-of-the-art",
+)
 
 
 def main() -> None:
@@ -33,17 +54,22 @@ def main() -> None:
     findings = []
     findings.extend(check_python_headers(root))
     findings.extend(check_results(results))
+    verdict = "PASS"
+    if any(item.get("severity") == "FAIL" for item in findings):
+        verdict = "FAIL"
+    elif findings:
+        verdict = "WARN"
     payload = {
         "project_root": str(root),
         "results_dir": str(results),
-        "verdict": "PASS" if not findings else "WARN",
+        "verdict": verdict,
         "findings": findings,
     }
     text = json.dumps(payload, indent=2, ensure_ascii=False)
     if args.output:
         Path(args.output).write_text(text, encoding="utf-8")
     print(text)
-    raise SystemExit(0 if not findings else 1)
+    raise SystemExit(0 if verdict == "PASS" else 1)
 
 
 def check_python_headers(root: Path) -> list[dict[str, str]]:
@@ -58,9 +84,9 @@ def check_python_headers(root: Path) -> list[dict[str, str]]:
             head = path.read_text(encoding="utf-8", errors="ignore")[:1200]
             rel = str(path.relative_to(root))
             if not any(marker in head for marker in HEADER_MARKERS):
-                findings.append({"type": "missing_python_chinese_header", "path": rel})
+                findings.append(finding("WARN", "legacy_missing_python_chinese_header", rel))
             if is_entry_script(path) and not any(marker in head for marker in BUDDHA_MARKERS):
-                findings.append({"type": "missing_buddha_header", "path": rel})
+                findings.append(finding("FAIL", "generated_entry_missing_buddha_header", rel))
     return findings
 
 
@@ -72,47 +98,109 @@ def is_entry_script(path: Path) -> bool:
 def check_results(results: Path) -> list[dict[str, str]]:
     findings: list[dict[str, str]] = []
     if not results.exists():
-        return [{"type": "missing_results_dir", "path": str(results)}]
+        return [finding("FAIL", "missing_results_dir", str(results))]
 
     if not find_any(results, ["*reproducibility_manifest.json", "*manifest*.json"]):
-        findings.append({"type": "missing_reproducibility_manifest", "path": str(results)})
+        findings.append(finding("FAIL", "missing_reproducibility_manifest", str(results)))
     if not find_any(results, ["artifact_index.csv"]):
-        findings.append({"type": "missing_artifact_index", "path": str(results)})
+        findings.append(finding("FAIL", "missing_artifact_index", str(results)))
     if not find_any(results, ["ppt_index.md", "*colleague*briefing*.md", "*briefing*.md"]):
-        findings.append({"type": "missing_ppt_or_colleague_briefing", "path": str(results)})
+        findings.append(finding("FAIL", "missing_ppt_or_colleague_briefing", str(results)))
+    compliance_files = list(results.rglob("skill_compliance_audit.md"))
+    if not compliance_files:
+        findings.append(finding("FAIL", "missing_skill_compliance_audit", str(results)))
+    else:
+        findings.extend(check_skill_compliance_audit(compliance_files[0]))
     if not find_any(results, ["progress.csv"]):
-        findings.append({"type": "missing_progress_csv_for_live_monitoring", "path": str(results)})
+        findings.append(finding("FAIL", "missing_progress_csv_for_live_monitoring", str(results)))
     if not find_any(results, ["events.out.tfevents*", "*.tfevents*"]):
-        findings.append({"type": "missing_tensorboard_event_files", "path": str(results)})
+        findings.append(finding("FAIL", "missing_tensorboard_event_files", str(results)))
 
     md_files = list(results.rglob("*.md"))
     if not md_files:
-        findings.append({"type": "missing_markdown_reports", "path": str(results)})
+        findings.append(finding("FAIL", "missing_markdown_reports", str(results)))
     elif not any("风险" in read_text(path) or "risk" in path.name.lower() for path in md_files):
-        findings.append({"type": "missing_explicit_risk_analysis", "path": str(results)})
+        findings.append(finding("FAIL", "missing_explicit_risk_analysis", str(results)))
+    findings.extend(check_claim_boundaries(md_files, results))
 
     figure_dirs = [path for path in results.rglob("*") if path.is_dir() and (any(path.glob("*.png")) or any(path.glob("*.pdf")))]
     if not figure_dirs and not find_any(results, ["missing_figures.md"]):
-        findings.append({"type": "missing_figures_or_missing_figures_note", "path": str(results)})
+        findings.append(finding("FAIL", "missing_figures_or_missing_figures_note", str(results)))
     for figures in figure_dirs:
         pngs = list(figures.glob("*.png"))
         pdfs = {path.stem for path in figures.glob("*.pdf")}
         svgs = {path.stem for path in figures.glob("*.svg")}
         for png in pngs:
             if png.stem not in pdfs:
-                findings.append({"type": "missing_same_stem_pdf", "path": str(png)})
+                findings.append(finding("FAIL", "missing_same_stem_pdf", str(png)))
             if png.stem not in svgs:
-                findings.append({"type": "missing_same_stem_svg", "path": str(png)})
+                findings.append(finding("FAIL", "missing_same_stem_svg", str(png)))
         if pngs and not (figures / "README.md").exists():
-            findings.append({"type": "missing_figure_quickstart_readme", "path": str(figures)})
+            findings.append(finding("FAIL", "missing_figure_quickstart_readme", str(figures)))
         if pngs and not (figures / "figure_quality_audit.md").exists():
-            findings.append({"type": "missing_figure_quality_audit_md", "path": str(figures)})
+            findings.append(finding("FAIL", "missing_figure_quality_audit_md", str(figures)))
         if pngs and not find_any(results, ["figure_quality_audit.csv"]):
-            findings.append({"type": "missing_figure_quality_audit_csv", "path": str(results)})
+            findings.append(finding("FAIL", "missing_figure_quality_audit_csv", str(results)))
 
     has_tables = any(path.name != "artifact_index.csv" for path in results.rglob("*.csv"))
     if not has_tables and not find_any(results, ["missing_tables.md"]):
-        findings.append({"type": "missing_tables_or_missing_tables_note", "path": str(results)})
+        findings.append(finding("FAIL", "missing_tables_or_missing_tables_note", str(results)))
+    findings.extend(check_algorithm_comparison(results))
+    findings.extend(check_missing_notes(results))
+    return findings
+
+
+def check_skill_compliance_audit(path: Path) -> list[dict[str, str]]:
+    text = read_text(path)
+    header = next((line for line in text.splitlines() if "gate_id" in line and "requirement" in line), "")
+    columns = {cell.strip().lower() for cell in header.strip("|").split("|")}
+    if not COMPLIANCE_COLUMNS.issubset(columns):
+        return [finding("FAIL", "skill_compliance_audit_missing_columns", str(path))]
+    return []
+
+
+def check_algorithm_comparison(results: Path) -> list[dict[str, str]]:
+    findings: list[dict[str, str]] = []
+    paths = list(results.rglob("algorithm_comparison_summary.csv"))
+    if not paths:
+        if not find_any(results, ["missing_tables.md"]):
+            findings.append(finding("FAIL", "missing_algorithm_comparison_summary", str(results)))
+        return findings
+    for path in paths:
+        try:
+            with path.open(newline="", encoding="utf-8-sig") as handle:
+                reader = csv.DictReader(handle)
+                columns = {name.strip() for name in (reader.fieldnames or [])}
+                if not ALGORITHM_COMPARISON_COLUMNS.issubset(columns):
+                    findings.append(finding("FAIL", "algorithm_comparison_missing_raw_reward_columns", str(path)))
+                    continue
+                for index, row in enumerate(reader, start=2):
+                    value = (row.get("shaped_reward_used_for_claim") or "").strip().lower()
+                    if value in {"true", "1", "yes", "y"}:
+                        findings.append(finding("FAIL", "shaped_reward_used_for_claim", str(path), f"line={index}"))
+        except OSError as exc:
+            findings.append(finding("FAIL", "cannot_read_algorithm_comparison_summary", str(path), str(exc)))
+    return findings
+
+
+def check_claim_boundaries(md_files: list[Path], results: Path) -> list[dict[str, str]]:
+    findings: list[dict[str, str]] = []
+    pattern = re.compile("|".join(re.escape(term) for term in HIGH_RISK_CLAIMS), re.IGNORECASE)
+    for path in md_files:
+        text = read_text(path)
+        match = pattern.search(text)
+        if match:
+            findings.append(finding("WARN", "high_risk_claim_term", str(path.relative_to(results)), match.group(0)))
+    return findings
+
+
+def check_missing_notes(results: Path) -> list[dict[str, str]]:
+    findings: list[dict[str, str]] = []
+    for name in ("missing_figures.md", "missing_tables.md"):
+        for path in results.rglob(name):
+            text = read_text(path).lower()
+            if "missing columns" not in text and "缺" not in text:
+                findings.append(finding("WARN", "missing_note_lacks_column_reason", str(path)))
     return findings
 
 
@@ -122,6 +210,13 @@ def find_any(root: Path, patterns: list[str]) -> bool:
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8", errors="ignore")
+
+
+def finding(severity: str, finding_type: str, path: str, detail: str = "") -> dict[str, str]:
+    item = {"severity": severity, "type": finding_type, "path": path}
+    if detail:
+        item["detail"] = detail
+    return item
 
 
 if __name__ == "__main__":

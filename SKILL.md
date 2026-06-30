@@ -66,6 +66,7 @@ Run only the checks that match existing artifacts:
 ```bash
 python scripts/validate_run_trace.py path/to/run-folder
 python scripts/check_ieee_plot_manifest.py path/to/figure_manifest.json
+python scripts/audit_reproducible_training_project.py --project-root path/to/repo --results-dir path/to/results
 ```
 
 After editing this skill itself, validate the skill folder structure and markdown formatting.

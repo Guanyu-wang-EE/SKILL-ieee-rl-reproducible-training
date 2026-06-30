@@ -27,6 +27,8 @@ Before editing or launching an unattended long goal:
 
 Ask only for destructive actions, scientific-semantics changes, major dependencies, architecture rewrites, unrelated expensive sweeps, or commit/push when not explicitly authorized. Otherwise choose the smallest conservative option from project docs and log the assumption.
 
+Use faster hardware without changing experiment semantics. It is acceptable to tune `num_workers`, batching, evaluation parallelism, log flush interval, checkpoint interval, and device placement. Do not change reward/cost definitions, budgets, seeds, training steps, core hyperparameters, or algorithm semantics only to make a run faster.
+
 ## Required Run Files
 
 Every run must write artifacts during training:

@@ -15,6 +15,7 @@ Use this reference after valid RL/DRL training or evaluation packages, especiall
 - Reproducibility manifest
 - Artifact index
 - PPT index
+- Skill compliance audit
 - Recommended script pattern
 - Status vocabulary
 
@@ -30,6 +31,7 @@ A run package is complete only when it has:
 - reproducibility manifest with SHA256 and byte counts;
 - artifact index;
 - PPT index or colleague briefing slide map;
+- `skill_compliance_audit.md` with a gate matrix;
 - `missing_figures.md` or `missing_tables.md` for any required output that cannot be generated from available columns.
 
 Do not fabricate plots, columns, metrics, or statistical claims. Missing data is a reporting result.
@@ -101,6 +103,12 @@ colleague_briefing.md
 skill_compliance_audit.md
 ```
 
+`skill_compliance_audit.md` must include a Markdown table with these columns:
+
+```text
+gate_id, requirement, evidence_path, command, verdict, missing_reason
+```
+
 Reader-usability gate:
 
 - Write Chinese-first for an engineering colleague who did not read the chat.
@@ -159,6 +167,14 @@ known remaining risks
 Post-training reward comparisons across RL methods and benchmarks must use same-tier raw environment reward delta. Valid sources are original environment rewards on one scale, for example `PowerUCEnv.step()` output or `eval_episodes.csv:reward`.
 
 Do not directly compare each method's shaped training-objective reward. Those curves are diagnostic-only and must be excluded from performance claims, algorithm rankings, PPT takeaways, and paper-facing conclusions.
+
+`algorithm_comparison_summary.csv` must include:
+
+```text
+algorithm, tier, seed_count, raw_reward_source, raw_env_reward_mean, raw_env_reward_std, delta_vs_same_tier_baseline, shaped_reward_used_for_claim
+```
+
+`shaped_reward_used_for_claim` must be `false` for any performance row.
 
 ## Figures
 
@@ -264,6 +280,7 @@ episode_summary.csv
 eval_summary.csv
 constraint_violation_summary.csv
 algorithm_comparison_summary.csv
+same_tier_raw_reward_delta.csv
 checkpoint_roundtrip_summary.csv
 warning_summary.csv
 artifact_index.csv
@@ -387,7 +404,7 @@ artifact path
 
 ## Recommended Script Pattern
 
-Prefer one project script:
+Default to one project script unless the repository already has a clearer tool:
 
 ```text
 scripts/generate_<project_tag>_artifacts.py
