@@ -1,56 +1,171 @@
-﻿# IEEE RL Reproducible Training 技能
+# IEEE RL Reproducible Training 技能
 
 <p align="right"><a href="README.md">English</a> | <strong>简体中文</strong></p>
 
-一个可复现强化学习训练技能，用于可追踪实验、训练/测试记录分离、IEEE 风格图件与最终产物审计。
+本仓库是一个 RL/DRL 可复现训练技能的 Git 源镜像。它把长时间强化学习实验收束为可审计的研究包：实时训练记录、训练/评估证据分离、TensorBoard 监控、同 tier 原始奖励对比、IEEE 风格图件、产物清单与最终质量门。
 
-本仓库是该技能的 Git 源镜像。仓库文档保留在这里；安装后的运行副本应保持精简，只包含执行所需文件。
+仓库文档保留在这里。精简的安装运行副本只应包含技能本身执行所需文件。
 
-## 功能范围
+## 目录
 
-- 为长训练定义实时 CSV、JSONL、stdout 与 checkpoint 记录。
-- 区分训练证据、评估证据与训练后报告。
-- 通过专用参考文件和脚本路由图件风格、报告包、清单、清理与最终审计。
+- [用途](#用途)
+- [仓库地图](#仓库地图)
+- [如何使用该技能](#如何使用该技能)
+- [核心契约](#核心契约)
+- [参考文件索引](#参考文件索引)
+- [脚本索引](#脚本索引)
+- [资产索引](#资产索引)
+- [预期项目产物](#预期项目产物)
+- [生成项目 README 契约](#生成项目-readme-契约)
+- [验证命令](#验证命令)
+- [维护说明](#维护说明)
+- [语言一致性](#语言一致性)
 
-## 使用场景
+## 用途
 
-当任务与 SKILL.md 中的描述匹配时使用该技能。先阅读 SKILL.md，再按照其中的路由表打开 references、scripts、assets 或索引资源。
+当 RL/DRL 实验的科学结论必须能够从命令追踪到最终报告时使用该技能。它特别适合能源系统控制、智能电网仿真、约束强化学习、无人值守长训练、训练后产物打包，以及组会或论文证据审计。
 
-典型使用场景：
+该技能有意保持严格。缺失数据是一种结果，不是编造图件、指标、基线或完成声明的理由。
 
-- 长训练前运行冒烟测试，并创建唯一输出目录。
-- 训练期间写入实时记录，训练后运行独立评估。
-- 在声称完成前生成报告、图件、清单、风险说明与最终质量门证据。
+## 仓库地图
 
-## 仓库内容
+| 路径 | 作用 |
+|---|---|
+| [`SKILL.md`](SKILL.md) | 入口、硬门、路由表与最小工作流 |
+| [`references/`](references/) | 按任务加载的具体规则 |
+| [`scripts/`](scripts/) | 确定性验证器与审计辅助脚本 |
+| [`assets/`](assets/) | 模板与可复用输出辅助文件 |
+| [`agents/`](agents/) | 可选界面元数据 |
+| [`README.md`](README.md) | 英文仓库导航 |
+| [`README_zh.md`](README_zh.md) | 简体中文仓库导航 |
 
-- `agents/`
-- `assets/`
-- `references/`
-- `scripts/`
-- `SKILL.md`
+## 如何使用该技能
 
-## 运行契约
+1. 先阅读 [`SKILL.md`](SKILL.md)。
+2. 按其中 `Reference Routing` 表只加载相关参考文件。
+3. 对当前产物运行匹配的确定性脚本。
+4. 在任何 final 或 complete 声明前，加载 [`references/final-quality-gates.md`](references/final-quality-gates.md)，并运行相关审计命令。
 
-- 不得编造指标、图件、基线或完成声明。
-- 保持训练记录与评估记录分离。
-- 保留成功运行记录，并标记失败产物，不静默混合。
+不要默认加载所有参考文件。该技能的结构是精简入口路由器加聚焦参考文件。
 
-## 验证与复查
+## 核心契约
 
-- 修改技能发现元数据前，先检查 SKILL.md frontmatter。
-- 保持 Hard Gates、Reference Routing 与 Verification 和仓库实际文件一致。
-- 如果存在 references/final-quality-gates.md，在任何最终、就绪、发布、提交或完成声明前使用它。
-- 如果存在技能专用审计脚本，修改路由文件或确定性辅助程序后运行它。
+- 没有冒烟测试、资源检查、实时日志、checkpoint 与 TensorBoard 仪表盘计划，不得开始长训练。
+- 训练记录与评估记录未分离前，不得声明完成。
+- 科学 gate 失败后不得推进阶段；必须使用五循环调试规则并记录证据，再标记 `BLOCKED`。
+- 不得把不同方法各自的 shaped training-objective reward 当作性能证据直接互比。
+- 训练后奖励比较必须使用同 tier 原始环境奖励差值，例如同一尺度的环境 `step()` reward 或 `eval_episodes.csv:reward`。
+- 项目根 `README.md` 必须是导航页，用相对链接索引报告、图件、表格、代码、配置、运行记录、验证日志、清单、审计与缺失产物说明。
+- 最终报告必须包含风险边界、缺失产物说明、artifact index、SHA256 manifest 与质量门证据。
+- 失败、中断、冒烟、短测、pilot 或不可行运行不得混入有效性能均值。
+
+## 参考文件索引
+
+| 参考文件 | 何时加载 |
+|---|---|
+| [`references/realtime-training-monitoring.md`](references/realtime-training-monitoring.md) | 规划或审计长训练、实时 CSV/JSONL/stdout 记录、TensorBoard、checkpoint、科学 gate、五循环调试、坏 run 处理 |
+| [`references/reproducibility-recordkeeping.md`](references/reproducibility-recordkeeping.md) | 撰写或审计项目 `README.md`、`requirements.txt`、`output.md`、运行记录、Python 头注释与复现说明 |
+| [`references/post-training-reporting.md`](references/post-training-reporting.md) | 生成报告、图件、表格、artifact index、reproducibility manifest、PPT index、colleague briefing、缺失产物说明 |
+| [`references/ieee-plot-style.md`](references/ieee-plot-style.md) | 创建或审查 IEEE 风格图件、caption、SVG/PDF/PNG 导出、figure manifest |
+| [`references/final-quality-gates.md`](references/final-quality-gates.md) | 在声明 run、报告、产物包或项目完成前进行最终审计 |
+| [`references/project-hygiene-cleanup.md`](references/project-hygiene-cleanup.md) | 清理或排除失败、误导、半成品或垃圾产物，同时保留可信成功运行 |
+
+## 脚本索引
+
+| 脚本 | 作用 |
+|---|---|
+| [`scripts/validate_run_trace.py`](scripts/validate_run_trace.py) | 验证 run 文件夹中的训练记录、progress schema、checkpoint 与可选评估产物 |
+| [`scripts/check_ieee_plot_manifest.py`](scripts/check_ieee_plot_manifest.py) | 检查 figure manifest、导出覆盖率与 IEEE 图件包一致性 |
+| [`scripts/audit_reproducible_training_project.py`](scripts/audit_reproducible_training_project.py) | 执行最终 smoke/semantic audit：根 README 导航、技能合规矩阵、raw reward 对比列、shaped reward claim 失败、高风险 claim 警告、报告、图件、表格、TensorBoard events、manifest、artifact index、生成代码头注释 |
+
+## 资产索引
+
+| 资产 | 作用 |
+|---|---|
+| [`assets/python_file_header_templates.md`](assets/python_file_header_templates.md) | 中文优先 Python 文件头与入口脚本佛头模板 |
+| [`assets/output_report_template.md`](assets/output_report_template.md) | 结构化 `output.md` 报告模板 |
+| [`assets/monitor_training_template.m`](assets/monitor_training_template.m) | MATLAB CSV 监控模板，用作备选实时监督 |
+
+## 预期项目产物
+
+### 运行记录
+
+| 产物 | 要求 |
+|---|---|
+| `config.json`, `run_command.txt`, `git_commit.txt` | 可复现启动上下文 |
+| `stdout.log`, `progress.csv`, `episodes.csv`, `updates.csv` | 实时训练与诊断记录 |
+| `tensorboard/` 或 `tb/` event files | 长训练必需的仪表盘证据 |
+| `checkpoints/latest`, `checkpoints/best` | 可恢复模型来源 |
+| `summary.json`, `diagnostic.json` 或 `gate_debug_report.md` | 最终状态、gate/debug 证据、中止原因 |
+
+### 评估记录
+
+| 产物 | 要求 |
+|---|---|
+| `eval_config.json`, `eval_command.txt` | 评估设置与精确命令 |
+| `eval_episodes.csv`, `eval_summary.json` | 测试 seed、checkpoint 来源、policy 模式、feasible rate 与评估指标 |
+
+### 训练后产物包
+
+| 产物 | 要求 |
+|---|---|
+| 根 `README.md` 或结果 `index.md` | 导航页，不能只是简介或 changelog |
+| 主报告、summary、风险报告、debug/change log | 中文优先技术证据，并清晰标注 claim boundary |
+| `figures/`, figure README, `figure_quality_audit.md`, `figure_quality_audit.csv` | IEEE 风格图件与质量证据 |
+| `tables/`, `algorithm_comparison_summary.csv`, `same_tier_raw_reward_delta.csv`, run/eval/constraint summaries | 机器可读汇总 |
+| `reproducibility_manifest.json`, `artifact_index.csv` | SHA256/字节数清单与人类可读产物索引 |
+| `ppt_index.md` 或 `colleague_briefing.md` | 幻灯片映射、takeaway、claim boundary 与产物路径 |
+| `skill_compliance_audit.md`, 使用时的 `completion_audit.md` | Gate 矩阵与最终就绪证据 |
+| `missing_figures.md`, `missing_tables.md` | 明确缺失列、上游产物与所需 instrumentation |
+
+### 原始奖励对比表
+
+`algorithm_comparison_summary.csv` 必须包含：
+
+```text
+algorithm, tier, seed_count, raw_reward_source, raw_env_reward_mean, raw_env_reward_std, delta_vs_same_tier_baseline, shaped_reward_used_for_claim
+```
+
+性能行中的 `shaped_reward_used_for_claim` 必须为 `false`。若为 `true`，最终审计失败。
+
+## 生成项目 README 契约
+
+每个使用该技能的 RL/DRL 复现实验项目，其根 `README.md` 必须是导航页，并使用 GitHub 可用的相对链接。它必须索引：
+
+- 子目录 README，例如 `figures/README.md` 或 TensorBoard event README；
+- 报告：index、正式报告、summary、PPT index、colleague briefing、risk report、debug/change log；
+- 图件：figures 目录、figure README、figure quality audit、missing figures 说明；
+- 表格：tables 目录、algorithm comparison、run summary、evaluation summary、constraint violation summary、artifact index；
+- 代码：`src/`、`scripts/`、训练入口、评估入口、训练后产物生成脚本；
+- 配置：`commands/configs/` 或项目实际 config 目录；
+- 运行记录：`runs/`、`progress.csv`、`stdout.log`、checkpoints、TensorBoard event 目录；
+- 复现与审计：manifest、artifact index、validation logs、skill compliance audit、completion audit；
+- 缺失产物：`missing_figures.md`、`missing_tables.md`。
+
+如果某类产物未生成，README 必须写明 `NOT AVAILABLE: <reason>`，或链接相应缺失产物说明。不得静默省略该类别。
+
+## 验证命令
+
+根据当前审查产物运行对应检查：
+
+```bash
+python path/to/quick_validate.py .
+python scripts/validate_run_trace.py path/to/run-folder
+python scripts/check_ieee_plot_manifest.py path/to/figure_manifest.json
+python scripts/audit_reproducible_training_project.py --project-root path/to/repo --results-dir path/to/results
+python -m py_compile scripts/validate_run_trace.py scripts/check_ieee_plot_manifest.py scripts/audit_reproducible_training_project.py
+```
+
+`audit_reproducible_training_project.py` 返回 `PASS`、`WARN` 或 `FAIL`。`FAIL` 表示最终交付 gate 缺失或科学口径不安全；`WARN` 表示历史债或高风险 claim 文本需要复查。
 
 ## 维护说明
 
-- 保持 SKILL.md 作为入口和路由器。
-- 如果技能包含参考文件，将详细领域材料保存在 references/ 中。
-- 将确定性辅助程序放在 scripts/ 或 tools/ 中，并在修改后验证。
-- 同步更新 README.md 与 README_zh.md，确保两种语言描述相同的范围与质量门。
-- 不要把仅属于仓库的文档移动到安装后的运行副本。
+- 保持 [`SKILL.md`](SKILL.md) 精简，并把细节路由到 references。
+- 当某项要求可机器检查时，同步更新 reference 文件与 audit 脚本。
+- 仅把仓库文档保留在该 Git 镜像中，不要放进精简安装运行副本。
+- 修改脚本后执行验证，并在发布前删除生成缓存。
+- 在同一提交中同步更新 [`README.md`](README.md) 与 [`README_zh.md`](README_zh.md)。
 
 ## 语言一致性
 
-README.md 是本文档的英文对应版本。任一 README 变更时，应在同一个提交中同步更新另一种语言版本。
+[`README.md`](README.md) 是本文档的英文对应版本。两份 README 应拥有相同章节、声明、质量门、命令与维护预期。
