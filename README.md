@@ -6,6 +6,8 @@ This repository is the Git-backed source mirror for an RL/DRL reproducible-train
 
 Repository documentation belongs here. Lean installed runtime copies should contain only files needed by the skill itself.
 
+For non-RL, affine-only, DL-only, or paper-style numerical reproduction, use only the recordkeeping, IEEE figure, manifest, cleanup, and final-audit parts; RL-only artifacts are required only when the project defines them.
+
 ## Table Of Contents
 
 - [Purpose](#purpose)
@@ -51,9 +53,13 @@ Do not load every reference by default. The skill is designed as a compact route
 ## Core Contracts
 
 - Do not start long training without smoke tests, resource checks, live logging, checkpoints, and a TensorBoard dashboard plan.
+- Do not impose RL-only artifacts on non-RL, affine-only, DL-only, or paper-style numerical reproduction projects.
 - Do not claim completion until training records and evaluation records are separated.
 - Do not advance a phase after a failed scientific gate; use the five-cycle debug rule and record evidence before marking `BLOCKED`.
 - When code, tests, execution configs, or debug patches changed, close with Ponytail-style minimality review and Brooks-style code/test diagnosis.
+- Before editing generated Python experiment files, load [`assets/python_file_header_templates.md`](assets/python_file_header_templates.md); Buddha ASCII is only for entrypoints and never replaces the Chinese overview header.
+- Before final completion, compare stage contracts, report claims, figure axes/legends/text, and actual output files.
+- Git submission keeps source/tests/docs/CSV/JSON/figures/gates/reports/manifests/lightweight evidence and excludes raw inputs, logs, caches, and heavy solver caches unless explicitly archival.
 - Do not compare shaped training-objective rewards across methods as performance evidence.
 - Post-training reward comparisons must use same-tier raw environment reward delta, such as environment `step()` reward or `eval_episodes.csv:reward` on one scale.
 - Root project `README.md` must be a navigation page with relative links to reports, figures, tables, code, configs, runs, validation logs, manifests, audits, and missing-output notes.

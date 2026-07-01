@@ -9,6 +9,10 @@ description: Use when RL/DRL paper reproduction or energy-system control work ne
 
 Use this skill to keep RL/DRL reproduction work traceable end to end: live training records, separate train/test evaluation, IEEE-style figures, Chinese-first colleague-readable reports, risk analysis, reproducibility manifests, and clean final experiment folders.
 
+## Scope Guard
+
+If project instructions declare the work as non-RL, affine-only, DL-only, or paper-style numerical reproduction, reuse only the recordkeeping, IEEE figure, manifest, cleanup, and final-audit parts of this skill. Do not impose RL-only artifacts such as TensorBoard events, rewards, episodes, policy mode, train/eval rollouts, alpha/lambda traces, or feasible-rate metrics unless the project explicitly defines them.
+
 ## Reference Routing
 | User task | Load |
 |---|---|
@@ -34,7 +38,7 @@ Do not load every reference by default. Load only the routed files plus any dire
 - Generated Markdown must be Chinese-first, technically explicit, cross-linked, and readable by an engineering colleague who did not watch the run.
 - Post-training packs must include README or index entry, main/summary/debug reports, risk analysis, figure/table index, reproducibility manifest with SHA256 and bytes, and explicit missing-output notes.
 - Figures must follow IEEE style, export PNG/PDF/SVG when data exists, validate SVG font handling and vector path geometry, avoid overlap/clutter, and pass a figure quality audit or record why audit is unavailable.
-- Generated experiment Python files must have the Chinese overview header; generated `main.py`, `run_*.py`, `train_*.py`, and long-running entry scripts must also include the Buddha blessing header from `assets/python_file_header_templates.md`.
+- Before editing generated Python experiment files, load `assets/python_file_header_templates.md`. All generated `.py` files keep the Chinese-first overview header. Buddha ASCII is an additional block only for `main.py`, `run_*.py`, `train_*.py`, long-running launchers, and equivalent project entrypoints.
 - Preserve successful run records. Delete failed/misleading artifacts only when user/project instructions authorize deletion; otherwise mark them excluded with evidence.
 - Missing data is a result. Do not fabricate plots, tables, SOC traces, metrics, baselines, or paper-level claims.
 

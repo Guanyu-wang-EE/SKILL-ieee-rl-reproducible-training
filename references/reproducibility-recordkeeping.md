@@ -101,8 +101,10 @@ Use `assets/output_report_template.md` when drafting this file.
 
 ## Python File Headers
 
-All `.py` files generated for these projects should start with a Chinese-first overview header covering purpose, creation date, input files or CSVs, output files, dependent scripts/modules, run example, and reproducibility notes.
+Before editing generated Python experiment files, load `assets/python_file_header_templates.md`.
 
-Large one-command main/run/long-training scripts additionally use the Buddha blessing ASCII header and English blessing specified in `assets/python_file_header_templates.md`.
+All `.py` files generated for these projects should start with the Chinese-first overview header covering purpose, creation date, input files or CSVs, output files, dependent scripts/modules, run example, and reproducibility notes.
+
+Large one-command main/run/long-training scripts additionally use the Buddha blessing ASCII header and English blessing specified in `assets/python_file_header_templates.md`. This block is only for `main.py`, `run_*.py`, `train_*.py`, long-running launchers, and equivalent project entrypoints; it does not replace the Chinese overview header and should not be forced into small utility scripts.
 
 Inside code, comment only non-obvious and reproducibility-relevant logic such as reward/cost normalization, constraint thresholds, alpha updates, seed fixing, and checkpoint strategy. Do not write empty comments for ordinary assignments or obvious logic.

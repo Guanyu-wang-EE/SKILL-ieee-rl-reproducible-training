@@ -2,6 +2,8 @@
 
 Use this reference before claiming any substantial RL/DRL training, pilot, long run, report, or artifact package is complete. It exists because agents often follow the training loop but forget presentation, reproducibility, or readability requirements.
 
+For non-RL, affine-only, DL-only, or paper-style numerical reproduction packages, apply the recordkeeping, figure/table, manifest, cleanup, and final closure checks. Mark RL-only rows such as TensorBoard, reward, episodes, policy mode, train/eval rollouts, alpha/lambda, and feasible-rate metrics as `NOT APPLICABLE` unless the project explicitly defines them.
+
 ## Required Audit Order
 
 1. Check code headers.
@@ -18,8 +20,9 @@ Use this reference before claiming any substantial RL/DRL training, pilot, long 
 
 For generated or substantially rewritten Python experiment files:
 
-- Require the Chinese overview header fields from `assets/python_file_header_templates.md`.
-- Require the Buddha blessing block for generated `main.py`, `run_*.py`, `train_*.py`, and long-running orchestration scripts.
+- Load `assets/python_file_header_templates.md` before auditing or editing headers.
+- Require the Chinese overview header fields from that template for all generated `.py` files.
+- Require the Buddha blessing block only for generated `main.py`, `run_*.py`, `train_*.py`, long-running launchers, and equivalent project entrypoints.
 - Keep comments useful: reward/cost definitions, constraint thresholds, seed fixing, checkpoint strategy, data filtering, and non-obvious algorithm logic.
 
 If a legacy file lacks these headers and the task does not authorize editing it, mention the gap instead of silently ignoring it.
@@ -150,6 +153,8 @@ Run this gate only when the work changed code, tests, execution-affecting config
 1. Ponytail pass: every changed file maps to the failed gate or requested output; no new dependency, abstraction, config surface, or broad refactor was added unless required; unrelated user changes were preserved.
 2. Brooks pass: record material code/test findings as `Symptom`, `Source`, `Consequence`, and `Remedy`; fix blockers that affect learning signal, safety semantics, evaluation validity, reproducibility, or locked claims.
 3. Residual risk pass: record unfixed non-blockers with file paths and evidence. If Brooks Lint is already available, it may be used for this review; do not install it only to satisfy this gate.
+
+For paper-style artifact packages, also run a contract closure audit: compare stage contract wording, report claims, figure axes/legends/text, and actual output files. Verify visual inspection evidence, `git diff --check`, generated Python headers, and staged-path boundaries before claiming completion.
 
 ## Cleanup Gate
 

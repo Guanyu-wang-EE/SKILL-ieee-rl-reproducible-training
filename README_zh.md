@@ -6,6 +6,8 @@
 
 仓库文档保留在这里。精简的安装运行副本只应包含技能本身执行所需文件。
 
+对于 non-RL、affine-only、DL-only 或 paper-style numerical reproduction，只复用 recordkeeping、IEEE figure、manifest、cleanup 与 final-audit 部分；RL-only 产物只有在项目明确定义时才要求。
+
 ## 目录
 
 - [用途](#用途)
@@ -51,9 +53,13 @@
 ## 核心契约
 
 - 没有冒烟测试、资源检查、实时日志、checkpoint 与 TensorBoard 仪表盘计划，不得开始长训练。
+- 不得把 RL-only 产物强加给 non-RL、affine-only、DL-only 或 paper-style numerical reproduction 项目。
 - 训练记录与评估记录未分离前，不得声明完成。
 - 科学 gate 失败后不得推进阶段；必须使用五循环调试规则并记录证据，再标记 `BLOCKED`。
 - 当代码、测试、执行配置或 debug 补丁发生变化时，收口阶段必须加入 Ponytail-style 最小化审查与 Brooks-style 代码/测试诊断。
+- 编辑生成的 Python 实验文件前，必须加载 [`assets/python_file_header_templates.md`](assets/python_file_header_templates.md)；Buddha ASCII 只用于入口脚本，不能替代中文 overview header。
+- 最终完成前，必须核对 stage contract、报告声明、图轴/legend/文字与实际输出文件。
+- Git 提交保留 source/tests/docs/CSV/JSON/figures/gates/reports/manifests/lightweight evidence；排除 raw inputs、logs、caches 与大体积 solver caches，除非明确作为归档证据。
 - 不得把不同方法各自的 shaped training-objective reward 当作性能证据直接互比。
 - 训练后奖励比较必须使用同 tier 原始环境奖励差值，例如同一尺度的环境 `step()` reward 或 `eval_episodes.csv:reward`。
 - 项目根 `README.md` 必须是导航页，用相对链接索引报告、图件、表格、代码、配置、运行记录、验证日志、清单、审计与缺失产物说明。

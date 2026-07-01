@@ -73,3 +73,7 @@ eval_config.json, eval_command.txt, eval_episodes.csv, eval_summary.json
 At plan/report level, retain `plan_summary.json` and `threshold_summary.csv` when they exist.
 
 The final directory should serve reproducible experiments rather than preserve every early exploration artifact.
+
+## Git Boundary
+
+Commit source, tests, docs, dataset CSV/JSON, figures, gates, reports, manifests, and lightweight CSV evidence needed to reproduce or audit the result. Exclude raw inputs, stdout/stderr logs, `__pycache__`, large per-date solver NPZ caches, and other heavy transient caches unless the project explicitly says they are archival evidence.
