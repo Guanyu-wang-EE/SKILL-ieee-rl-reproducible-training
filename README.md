@@ -1,8 +1,8 @@
-# IEEE RL Reproducible Training Skill
+# IEEE RL/DL/ML Reproducible Training Skill
 
 <p align="right"><strong>English</strong> | <a href="README_zh.md">简体中文</a></p>
 
-This repository is the Git-backed source mirror for an RL/DRL reproducible-training skill. It turns long-running reinforcement-learning experiments into auditable research packages: live training records, separated train/evaluation evidence, TensorBoard monitoring, same-tier raw reward comparisons, IEEE-style figures, artifact manifests, and final quality gates.
+This repository is the Git-backed source mirror for an RL/DRL/DL/ML reproducible-training skill. It turns long-running learning experiments into auditable research packages: live records, separated train/evaluation evidence when applicable, TensorBoard monitoring for long training, same-tier raw reward comparisons when applicable, IEEE-style figures, artifact manifests, and final quality gates.
 
 Repository documentation belongs here. Lean installed runtime copies should contain only files needed by the skill itself.
 
@@ -25,7 +25,7 @@ For non-RL, affine-only, DL-only, or paper-style numerical reproduction, use onl
 
 ## Purpose
 
-Use this skill for reproducible RL/DRL experiments where scientific claims must be traceable from command to final report. It is especially useful for energy-system control, smart-grid simulation, constrained RL, long unattended training, post-training artifact packaging, and group-meeting or paper-facing evidence audits.
+Use this skill for reproducible RL/DRL/DL/ML experiments where scientific claims must be traceable from command to final report. It is especially useful for energy-system control, smart-grid simulation, constrained RL, supervised/deep-learning baselines, long unattended training, post-training artifact packaging, and group-meeting or paper-facing evidence audits.
 
 The skill is intentionally strict. It treats missing data as a result, not as a reason to invent plots, metrics, baselines, or completion claims.
 
@@ -138,7 +138,7 @@ algorithm, tier, seed_count, raw_reward_source, raw_env_reward_mean, raw_env_rew
 
 ## Generated Project README Contract
 
-For each RL/DRL reproduction project using this skill, the project root `README.md` must be a navigation page with GitHub-safe relative links. It must index:
+For each RL/DRL/DL/ML reproduction project using this skill, the project root `README.md` must be a navigation page with GitHub-safe relative links. It must index:
 
 - subdirectory READMEs such as `figures/README.md` or TensorBoard event README files;
 - reports: index, formal report, summary, PPT index, colleague briefing, risk report, debug/change log;

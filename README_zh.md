@@ -1,8 +1,8 @@
-# IEEE RL Reproducible Training 技能
+# IEEE RL/DL/ML Reproducible Training 技能
 
 <p align="right"><a href="README.md">English</a> | <strong>简体中文</strong></p>
 
-本仓库是一个 RL/DRL 可复现训练技能的 Git 源镜像。它把长时间强化学习实验收束为可审计的研究包：实时训练记录、训练/评估证据分离、TensorBoard 监控、同 tier 原始奖励对比、IEEE 风格图件、产物清单与最终质量门。
+本仓库是一个 RL/DRL/DL/ML 可复现训练技能的 Git 源镜像。它把长时间学习实验收束为可审计的研究包：实时记录、适用时的训练/评估证据分离、长训练 TensorBoard 监控、适用时的同 tier 原始奖励对比、IEEE 风格图件、产物清单与最终质量门。
 
 仓库文档保留在这里。精简的安装运行副本只应包含技能本身执行所需文件。
 
@@ -25,7 +25,7 @@
 
 ## 用途
 
-当 RL/DRL 实验的科学结论必须能够从命令追踪到最终报告时使用该技能。它特别适多智能体强化学习、智能电网仿真、约束强化学习、无人值守长训练、训练后产物打包，以及组会或论文证据审计。
+当 RL/DRL/DL/ML 实验的科学结论必须能够从命令追踪到最终报告时使用该技能。它特别适合多智能体强化学习、智能电网仿真、约束强化学习、监督/深度学习 baseline、无人值守长训练、训练后产物打包，以及组会或论文证据审计。
 
 该技能有意保持严格。缺失数据是一种结果，不是编造图件、指标、基线或完成声明的理由。
 
@@ -138,7 +138,7 @@ algorithm, tier, seed_count, raw_reward_source, raw_env_reward_mean, raw_env_rew
 
 ## 生成项目 README 契约
 
-每个使用该技能的 RL/DRL 复现实验项目，其根 `README.md` 必须是导航页，并使用 GitHub 可用的相对链接。它必须索引：
+每个使用该技能的 RL/DRL/DL/ML 复现实验项目，其根 `README.md` 必须是导航页，并使用 GitHub 可用的相对链接。它必须索引：
 
 - 子目录 README，例如 `figures/README.md` 或 TensorBoard event README；
 - 报告：index、正式报告、summary、PPT index、colleague briefing、risk report、debug/change log；

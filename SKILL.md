@@ -1,13 +1,13 @@
 ---
 name: ieee-rl-reproducible-training
-description: Use when RL/DRL paper reproduction or energy-system control work needs unattended long-goal execution, long training, mandatory TensorBoard long-run visualization, traceable train/test evaluation, same-tier raw environment reward delta comparisons, online-checkable CSV/JSONL/stdout records, IEEE TSG/TPS figures, Chinese-first colleague-readable reports, post-training PPT/report packs, figure/table quality audit, SHA256 manifests, artifact indexes, risk analysis, or cleanup/exclusion of failed or half-finished artifacts.
+description: Use when RL/DRL/DL/ML paper reproduction or energy-system control work needs unattended long-goal execution, long training, mandatory TensorBoard long-run visualization when applicable, traceable train/test evaluation, same-tier raw environment reward delta comparisons when applicable, online-checkable CSV/JSONL/stdout records, IEEE TSG/TPS figures, Chinese-first colleague-readable reports, post-training PPT/report packs, figure/table quality audit, SHA256 manifests, artifact indexes, risk analysis, or cleanup/exclusion of failed or half-finished artifacts.
 ---
 
-# IEEE RL Reproducible Training
+# IEEE RL/DL/ML Reproducible Training
 
 ## Overview
 
-Use this skill to keep RL/DRL reproduction work traceable end to end: live training records, separate train/test evaluation, IEEE-style figures, Chinese-first colleague-readable reports, risk analysis, reproducibility manifests, and clean final experiment folders.
+Use this skill to keep RL/DRL/DL/ML reproduction work traceable end to end: live records, separate train/test evaluation when applicable, IEEE-style figures, Chinese-first colleague-readable reports, risk analysis, reproducibility manifests, and clean final experiment folders.
 
 ## Scope Guard
 
